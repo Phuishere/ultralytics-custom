@@ -11,6 +11,15 @@ import torch
 import torch.nn as nn
 
 from ultralytics.nn.autobackend import check_class_names
+
+import inspect
+import ultralytics.nn.modules.custom_block as custom_block
+CUSTOM_BLOCKS = frozenset(set([
+    member 
+    for name, member in inspect.getmembers(custom_block, inspect.isclass)
+    if member.__module__ == custom_block.__name__
+]))
+
 from ultralytics.nn.modules import (
     AIFI,
     C1,
@@ -93,6 +102,7 @@ from ultralytics.utils.torch_utils import (
     time_sync,
 )
 
+from .modules.custom_block import *
 
 class BaseModel(torch.nn.Module):
     """Base class for all YOLO models in the Ultralytics family.
@@ -1643,6 +1653,10 @@ def parse_model(d, ch, verbose=True):
             c2 = args[0]
             c1 = ch[f]
             args = [*args[1:]]
+        elif m in CUSTOM_BLOCKS:
+            c2 = args[0]
+            c1 = ch[f]
+            args = [c1, c2, *args[1:]]
         else:
             c2 = ch[f]
 
