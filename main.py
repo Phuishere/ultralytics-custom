@@ -4,6 +4,9 @@ from pathlib import Path
 
 
 def parse_args():
+    '''
+    python ultralytics-custom/main.py --model ".\\yolo11_custom.yaml" --data ".\\tests\\test_dataset\\isic_data.yaml"
+    '''
     parser = argparse.ArgumentParser(description="YOLO Training Pipeline")
 
     parser.add_argument("--model", type=str, required=True,
@@ -15,7 +18,7 @@ def parse_args():
     parser.add_argument("--data", type=str, required=True,
                         help="Dataset YAML (e.g., coco8.yaml)")
 
-    parser.add_argument("--epochs", type=int, default=100,
+    parser.add_argument("--epochs", type=int, default=10,
                         help="Number of training epochs")
 
     parser.add_argument("--imgsz", type=int, default=640,
@@ -83,7 +86,6 @@ def main():
         name="model_export"
     )
     print(f"Exported model saved at: {export_file}")
-
 
 if __name__ == "__main__":
     main()

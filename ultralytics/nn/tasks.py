@@ -13,7 +13,10 @@ import torch.nn as nn
 from ultralytics.nn.autobackend import check_class_names
 
 import inspect
-import ultralytics.nn.modules.custom_block as custom_block
+from ultralytics.nn.modules import custom_block
+
+from ultralytics.nn.custom_tasks import parse_custom_block_argument
+
 CUSTOM_BLOCKS = frozenset(set([
     member 
     for name, member in inspect.getmembers(custom_block, inspect.isclass)
@@ -1654,6 +1657,7 @@ def parse_model(d, ch, verbose=True):
             c1 = ch[f]
             args = [*args[1:]]
         elif m in CUSTOM_BLOCKS:
+            args = parse_custom_block_argument(block_name=m.__name__, args=args)
             c2 = args[0]
             c1 = ch[f]
             args = [c1, c2, *args[1:]]
