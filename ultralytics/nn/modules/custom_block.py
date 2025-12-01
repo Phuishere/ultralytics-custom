@@ -70,7 +70,9 @@ class SpatialAttention(nn.Module):
         return (attn_weight * x) + (0.01 * x)
 
 class GlobalAttentionMechanism(nn.Module):
-    def __init__(self, c1, c2, pool_kernel=7, r: int = 16):
+    def __init__(self, c1, c2=None, pool_kernel=7, r: int = 16):
+        if c2 is None:
+            c2 = c1
         assert c1 == c2
         
         super().__init__()
