@@ -14,6 +14,7 @@ from ultralytics.nn.autobackend import check_class_names
 
 import inspect
 from ultralytics.nn.modules import custom_block
+from ultralytics.nn.modules.custom_block import *
 
 from ultralytics.nn.custom_tasks import parse_custom_block_argument
 
