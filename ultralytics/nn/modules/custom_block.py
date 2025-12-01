@@ -8,12 +8,16 @@ class LDS(nn.Module):
     def __init__(self, c1, c2, kernel_size=2, stride=2):
         super().__init__()
         '''Unclear document: Resort to reduce by two times (?)'''
-        self.down_conv = nn.Conv2d(c1, c2, kernel_size=kernel_size, stride=stride)
-        self.bn = nn.BatchNorm2d(c2)
+        self.c1 = c1
+        self.c2 = c2
+
+        self.down_conv = nn.Conv2d(self.c1, self.c2, kernel_size=kernel_size, stride=stride)
+        self.bn = nn.BatchNorm2d(self.c2)
         self.act = nn.SiLU()
 
     def forward(self, x):
-        return self.act(self.bn(self.down_conv(x)))
+        x = self.act(self.bn(self.down_conv(x)))
+        return x
 
 # ================================
 # Global Attention Mechanism
@@ -74,10 +78,13 @@ class GlobalAttentionMechanism(nn.Module):
         if c2 is None:
             c2 = c1
         assert c1 == c2
+
+        self.c1 = c1
+        self.c2 = c2
         
         super().__init__()
-        self.channel_attn = ChannelAttention(c1, r=r)
-        self.spatial_attn = SpatialAttention(c1, pool_kernel=pool_kernel, r=r)
+        self.channel_attn = ChannelAttention(self.c1, r=r)
+        self.spatial_attn = SpatialAttention(self.c1, pool_kernel=pool_kernel, r=r)
         
     def forward(self, x):
         x = self.channel_attn(x)

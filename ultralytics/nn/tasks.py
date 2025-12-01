@@ -1660,7 +1660,11 @@ def parse_model(d, ch, verbose=True):
         elif m in CUSTOM_BLOCKS:
             args = parse_custom_block_argument(block_name=m.__name__, args=args)
             c1 = ch[f]
-            args = [c1, *args]
+            if len(args) > 0:
+                c2 = args.pop(0)
+            else:
+                c2 = c1
+            args = [c1, c2, *args]
         else:
             c2 = ch[f]
 
