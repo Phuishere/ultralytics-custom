@@ -1659,9 +1659,8 @@ def parse_model(d, ch, verbose=True):
             args = [*args[1:]]
         elif m in CUSTOM_BLOCKS:
             args = parse_custom_block_argument(block_name=m.__name__, args=args)
-            c2 = args[0]
             c1 = ch[f]
-            args = [c1, c2, *args[1:]]
+            args = [c1, *args[1:]]
         else:
             c2 = ch[f]
 
