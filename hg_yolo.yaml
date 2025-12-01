@@ -16,10 +16,10 @@ backbone:
   - [-1, 1, LDS, [64]] # 2: Conv2d (out, kernel, stride, padding) - (64, 80, 80)
   - [-1, 1, HGBlock, [128, 64]] # 3: HGBlock - (64, 80, 80)
 
-  - [-1, 1, LDS, [128, 3, 2, 1]] # 4: Conv2d
+  - [-1, 1, LDS, [128]] # 4: Conv2d
   - [-1, 1, HGBlock, [256, 128]] # 5: HGBlock - (64, 40, 40)
 
-  - [-1, 1, LDS, [256, 3, 2, 1]] # 5: Conv2d
+  - [-1, 1, LDS, [256]] # 5: Conv2d
   - [-1, 1, HGBlock, [512, 256]] # 7: HGBlock - (64, 20, 20)
 
   - [-1, 1, SPPF, [256, 7]] # 8
