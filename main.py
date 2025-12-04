@@ -5,7 +5,7 @@ from pathlib import Path
 
 def parse_args():
     '''
-    python ultralytics-custom/main.py --model ".\\yolo11_custom.yaml" --data ".\\tests\\test_dataset\\isic_data.yaml"
+    python ultralytics-custom/main.py --model ".\\yolo11_custom.yaml" --data "E:\\learning\\Machine-Learning-Learning\\yolo_custom\\br53h_datasets\\br35h.yaml"
     '''
     parser = argparse.ArgumentParser(description="YOLO Training Pipeline")
 
@@ -56,13 +56,20 @@ def main():
         print(f"Loading weights: {args.weights}")
         model = model.load(args.weights)
 
+    # Check device
+    device = args.device
+    device = device.strip("[").strip("]") # Remove []
+    device = device.replace(" ", "").split(",") # Get device in list form [0] or [0, 1]
+    if len(device) == 1:
+        device = device[0]
+
     # Train
     print("\n=== Training Model ===")
     train_results = model.train(
         data=args.data,
         epochs=args.epochs,
         imgsz=args.imgsz,
-        device=args.device,
+        device=device,
     )
 
     # Validate

@@ -1,3 +1,4 @@
+import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
@@ -8,11 +9,8 @@ class LDS(nn.Module):
     def __init__(self, c1, c2, kernel_size=2, stride=2):
         super().__init__()
         '''Unclear document: Resort to reduce by two times (?)'''
-        self.c1 = c1
-        self.c2 = c2
-
-        self.down_conv = nn.Conv2d(self.c1, self.c2, kernel_size=kernel_size, stride=stride)
-        self.bn = nn.BatchNorm2d(self.c2)
+        self.down_conv = nn.Conv2d(c1, c2, kernel_size=kernel_size, stride=stride)
+        self.bn = nn.BatchNorm2d(c2)
         self.act = nn.SiLU()
 
     def forward(self, x):
@@ -78,14 +76,39 @@ class GlobalAttentionMechanism(nn.Module):
         if c2 is None:
             c2 = c1
         assert c1 == c2
-
-        self.c1 = c1
-        self.c2 = c2
         
         super().__init__()
-        self.channel_attn = ChannelAttention(self.c1, r=r)
-        self.spatial_attn = SpatialAttention(self.c1, pool_kernel=pool_kernel, r=r)
+        self.channel_attn = ChannelAttention(c1, r=r)
+        self.spatial_attn = SpatialAttention(c1, pool_kernel=pool_kernel, r=r)
         
     def forward(self, x):
         x = self.channel_attn(x)
         return self.spatial_attn(x)
+    
+class ScaledConcat(nn.Module):
+    def __init__(self, c1: int, c2: int = None, dim: int = 1, r: float = 16):
+        super().__init__()
+        self.ch = c1
+        self.hidden_ch = int(self.ch / r) or 1 # in case hidden channel becomes 0
+        self.dim = dim
+
+        # c2 logic: must be the same as the sum of channels num in c1
+        if c2 is None:
+            c2 = self.ch
+        assert c2 == self.ch # Assure the output channel is the same as the input channel
+        self.c2 = c2
+
+        self.gap = nn.AdaptiveAvgPool2d((1, 1))
+        
+        self.fc1 = nn.Linear(self.ch, self.hidden_ch)
+        self.silu = nn.SiLU()
+        self.fc2 = nn.Linear(self.hidden_ch, self.ch)
+        self.sigmoid = nn.Sigmoid()
+    
+    def forward(self, xs: list[torch.Tensor]):
+        identity = torch.concat(xs, dim = self.dim)
+
+        attn = self.gap(identity).view(-1, self.ch)
+        attn = self.silu(self.fc1(attn))
+        attn = self.sigmoid(self.fc2(attn)).view(-1, self.ch, 1, 1)
+        return attn * identity
