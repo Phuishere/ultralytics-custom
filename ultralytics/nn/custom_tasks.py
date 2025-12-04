@@ -9,7 +9,23 @@ CUSTOM_BLOCK_NAMES = frozenset(set([
 ]))
 
 def parse_custom_block_argument(block_name: str, args: list, ch: Optional[list] = None, f: Optional[int] = None) -> dict[str, Union[str, int, float, list]]:
-    if block_name in CUSTOM_BLOCK_NAMES:
+    if block_name == custom_block.ScaledConcat.__name__:
+        # Get c1 channels from args[0] - Different from other blocks!!!
+        c1 = 0
+        block_idices = args[0]
+        for idx in block_idices:
+            c1 += ch[idx]
+
+        # Get c2 as output, same as c1
+        c2 = c1
+        args = args[1:]
+        return {
+            "c1": c1,
+            "c2": c2,
+            "args": args
+        }
+
+    elif block_name in CUSTOM_BLOCK_NAMES:
         # Get input channel
         assert ch and f
         c1 = ch[f]
