@@ -61,7 +61,9 @@ def main():
     device = device.strip("[").strip("]") # Remove []
     device = device.replace(" ", "").split(",") # Get device in list form [0] or [0, 1]
     if len(device) == 1:
-        device = device[0]
+        device = int(device[0])
+    else:
+        device = [int(d) for d in device]
 
     # Train
     print("\n=== Training Model ===")
