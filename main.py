@@ -23,6 +23,9 @@ def parse_args():
 
     parser.add_argument("--imgsz", type=int, default=640,
                         help="Image size")
+    
+    parser.add_argument("--seed", type=int, default=42,
+                        help="Training seed")
 
     parser.add_argument("--device", type=str, default="cpu",
                         help="Compute device: cpu, cuda, 0, 1, etc.")
@@ -71,6 +74,7 @@ def main():
         data=args.data,
         epochs=args.epochs,
         imgsz=args.imgsz,
+        seed=args.seed,
         device=device,
     )
 
